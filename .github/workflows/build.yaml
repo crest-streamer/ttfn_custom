@@ -45,7 +45,7 @@ jobs:
         run: rm config.py
 
       - name: build
-        run: pyinstaller ${{ matrix.opts }} --runtime-tmpdir="." --icon trans_anomon.ico --exclude-module="config" --name ${{ matrix.bin }} -F twitchTransFN.py
+        run: pyinstaller ${{ matrix.opts }} --runtime-tmpdir="." --icon resource/trans_anomon.ico --exclude-module="config" --name ${{ matrix.bin }} -F twitchTransFN.py
 
       - name: archive with zip
         if: ${{ matrix.archive == 'zip' }}
