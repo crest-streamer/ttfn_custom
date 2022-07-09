@@ -123,7 +123,7 @@ elif pf == 'Windows':
         input() # stop for error!!
 else:
     try:
-        sys.path.append(os.path.join(os.path.abspath('..'), '.'))
+        sys.path.append(os.path.join(os.path.abspath('.'), '.'))
         config = importlib.import_module('config')
     except Exception as e:
         print(e)
