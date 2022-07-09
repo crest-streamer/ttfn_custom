@@ -94,35 +94,47 @@ deepl_lang_dict = {'de':'DE', 'en':'EN', 'fr':'FR', 'es':'ES', 'pt':'PT', 'it':'
 
 ##########################################
 # load config text #######################
+import platform
 import importlib
 
 # For [directly run from Python script at Windows, MacOS] -----------------------
-try:
-    sys.path.append(os.path.join(os.path.dirname(sys.argv[0]), '.'))
-    config = importlib.import_module('config')
-except Exception as e:
-    print(e)
-    print('Please make [config.py] and put it with twitchTransFN')
-    input() # stop for error!!
+pf = platform.system()
+if pf == 'Darwin' and hasattr(sys, '_MEIPASS'):
+    # For [MacOS & pyinstaller] --------------------------------------------------
+    from AppKit import NSBundle
+
+    path = NSBundle.mainBundle().pathForResource_ofType_("config", "py")
+    path = path.replace('config.py','')
+    try:
+        sys.path.append(os.path.join(path, '.'))
+        config = importlib.import_module('config')
+    except Exception as e:
+        print(e)
+        print(path)
+        print('Please make [config.py] and put it with twitchTransFN')
+        input() # stop for error!!
+elif pf == 'Windows':
+    try:
+        sys.path.append(os.path.join(os.path.dirname(sys.argv[0]), '.'))
+        config = importlib.import_module('config')
+    except Exception as e:
+        print(e)
+        print('Please make [config.py] and put it with twitchTransFN')
+        input() # stop for error!!
+else:
+    try:
+        sys.path.append(os.path.join(os.path.abspath('..'), '.'))
+        config = importlib.import_module('config')
+    except Exception as e:
+        print(e)
+        print('Please make [config.py] and put it with twitchTransFN')
+        input() # stop for error!!
 
 #####################################
 # tts : change speed 
 if config.ReadSpeed and config.ReadSpeed != 1.0:
     tfm = sox.Transformer()
     tfm.tempo(config.ReadSpeed)
-# # For [MacOS & pyinstaller] --------------------------------------------------
-# from AppKit import NSBundle
-
-# path = NSBundle.mainBundle().pathForResource_ofType_("config", "py")
-# path = path.replace('config.py','')
-# try:
-#     sys.path.append(os.path.join(path, '.'))
-#     config = importlib.import_module('config')
-# except Exception as e:
-#     print(e)
-#     print(path)
-#     print('Please make [config.py] and put it with twitchTransFN')
-#     input() # stop for error!!
 
 ###################################
 # fix some config errors ##########
