@@ -13,7 +13,6 @@ import queue
 import time
 import shutil
 import re
-import sox
 import requests
 import json
 
@@ -115,6 +114,7 @@ if pf == 'Darwin' and hasattr(sys, '_MEIPASS'):
         input() # stop for error!!
 elif pf == 'Windows':
     try:
+        import sox
         sys.path.append(os.path.join(os.path.dirname(sys.argv[0]), '.'))
         config = importlib.import_module('config')
     except Exception as e:
@@ -539,12 +539,11 @@ def gTTS_play(text, tl):
         tts_file = './tmp/cnt_{}.mp3'.format(datetime.now().microsecond)
         if config.Debug: print('gTTS file: {}'.format(tts_file))
         tts.save(tts_file)
-        if config.ReadSpeed and config.ReadSpeed != 1.0:
-            tts_file_changespeed = f'./tmp/CS_cnt_{datetime.now().microsecond}.mp3'
-            tfm.build_file(tts_file, tts_file_changespeed)
-            playsound(tts_file_changespeed, True)
-            os.remove(tts_file_changespeed)
-
+        if pf == 'Windows':
+            if config.ReadSpeed and config.ReadSpeed != 1.0:
+                tts_file_changespeed = f'./tmp/CS_cnt_{datetime.now().microsecond}.mp3'
+                tfm.build_file(tts_file, tts_file_changespeed)
+                playsound(tts_file_changespeed, True)
         else:
             playsound(tts_file, True)
 
