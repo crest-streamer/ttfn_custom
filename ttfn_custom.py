@@ -132,7 +132,7 @@ else:
 
 #####################################
 # tts : change speed 
-if config.ReadSpeed and config.ReadSpeed != 1.0:
+if config.ReadSpeed and config.ReadSpeed != 1.0 and pf == 'Windows':
     tfm = sox.Transformer()
     tfm.tempo(config.ReadSpeed)
 
