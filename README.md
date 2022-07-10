@@ -15,7 +15,7 @@ NOTE: When rewriting config.txt, please delete the `#` mark at the beginning of 
 
 # Required Files
 <li>Executable Binaly</li>
-Retrieved from https://github.com/crest-streamer/twitchTransFreeNext/releases
+Retrieved from [https://github.com/crest-streamer/ttfn_custom/releases](https://github.com/crest-streamer/ttfn_custom/releases) but I can't guarantee
 <pre>binary you downloaded
 config.py</pre>
 <li>Execute with Python(Developer's operating environment is Python 3.9.13)</li>
@@ -51,7 +51,7 @@ if completed edit then Overwrite.
 
 # 必要なファイル
 <li>実行ファイル</li>
-https://github.com/crest-streamer/twitchTransFreeNext/releases からダウンロードしてください。
+[https://github.com/crest-streamer/twitchTransFreeNext/releases](https://github.com/crest-streamer/ttfn_custom/releases) からもダウンロード出来ますが、動作保証は出来かねます。
 <pre>ご使用のOSに合った実行ファイル
 config.py</pre>
 <li>Pythonで動かす用ファイル</li>
