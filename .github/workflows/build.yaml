@@ -36,13 +36,13 @@ jobs:
         with: { python-version: 3.9 }
 
       - name: Upgrade PIP
-        run: pip3.9 install --upgrade pip
+        run: pip install --upgrade pip
 
       - name: install pyinstaller
-        run: python3.9 -m pip install --upgrade pip PyInstaller
+        run: python -m pip install --upgrade pip PyInstaller
 
       - name: install requirements
-        run: python3.9 -m pip install -r requirements.txt
+        run: python -m pip install -r requirements.txt
 
       - name: remove config.py
         run: rm config.py
@@ -62,6 +62,6 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          draft: false
+          draft: true
           prerelease: false
           files: ${{ matrix.env }}.${{ matrix.archive }}
