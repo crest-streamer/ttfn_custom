@@ -60,6 +60,17 @@ if is_macos:
             
             playsound_available = True
 
+def get_ffmpeg_path():
+    # PyInstallerで実行時にffmpegがバンドルされている場合、sys._MEIPASSを使ってパスを取得
+    if getattr(sys, 'frozen', False):
+        # 実行ファイルがPyInstallerでパッケージ化されている場合
+        ffmpeg_path = os.path.join(sys._MEIPASS, 'ffmpeg')
+    else:
+        # 開発環境では、ffmpegのパスを直接指定する
+        ffmpeg_path = os.path.join(os.path.dirname(__file__), 'ffmpeg')
+    
+    return ffmpeg_path
+    
 def process_with_ffmpeg(tts_file, speed):
     if speed < 0.5 or speed > 2.0:
         raise ValueError("Speed must be between 0.5 and 2.0")
@@ -71,7 +82,7 @@ def process_with_ffmpeg(tts_file, speed):
     ffmpeg_exec_name = 'ffmpeg.exe' if os.name == 'nt' else 'ffmpeg'
 
     # カレントディレクトリにある ffmpeg を探す
-    local_ffmpeg_path = os.path.join(os.getcwd(), ffmpeg_exec_name)
+    local_ffmpeg_path = get_ffmpeg_path
 
     # ffmpeg 実行パスを決定（local or PATH）
     if os.path.isfile(local_ffmpeg_path):
