@@ -81,7 +81,7 @@ jobs:
         id: get_version_unix
         if: runner.os != 'Windows'
         run: |
-          VERSION=$(grep "version =" twitchTransFN.py | awk -F "'" '{print $2}')
+          VERSION=$(grep "version =" ttfn_custom.py | awk -F "'" '{print $2}')
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Version detected: $VERSION"
 
@@ -90,7 +90,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: powershell
         run: |
-          $content = Get-Content -Path twitchTransFN.py
+          $content = Get-Content -Path ttfn_custom.py
           $versionLine = $content | Where-Object { $_ -match "version = '(.+)'" }
           $version = $matches[1]
           echo "version=$version" >> $env:GITHUB_OUTPUT
@@ -111,12 +111,12 @@ jobs:
 
       - name: archive with zip
         if: ${{ matrix.archive == 'zip' }}
-        run: powershell Compress-Archive -Path dist/* -DestinationPath twitchTransFN_${{ steps.get_version.outputs.version }}_${{ matrix.env }}.zip
+        run: powershell Compress-Archive -Path dist/* -DestinationPath ttfn_custom_${{ steps.get_version.outputs.version }}_${{ matrix.env }}.zip
 
       - name: archive with tar.gz
         if: ${{ matrix.archive == 'tar.gz' }}
         run: |
-          ARCHIVE_NAME="twitchTransFN_${{ steps.get_version.outputs.version }}_${{ matrix.env }}"
+          ARCHIVE_NAME="ttfn_custom_${{ steps.get_version.outputs.version }}_${{ matrix.env }}"
           mv dist "$ARCHIVE_NAME"
           tar -czvf "${ARCHIVE_NAME}.tar.gz" "$ARCHIVE_NAME"
           echo "Created archive: ${ARCHIVE_NAME}.tar.gz"
@@ -148,9 +148,9 @@ jobs:
           ls -la
           echo "Files that should be uploaded:"
           if [[ "${{ matrix.archive }}" == "zip" ]]; then
-            echo "twitchTransFN_${{ steps.get_version.outputs.version }}_${{ matrix.env }}.zip"
+            echo "ttfn_custom_${{ steps.get_version.outputs.version }}_${{ matrix.env }}.zip"
           else
-            echo "twitchTransFN_${{ steps.get_version.outputs.version }}_${{ matrix.env }}.tar.gz"
+            echo "ttfn_custom_${{ steps.get_version.outputs.version }}_${{ matrix.env }}.tar.gz"
           fi
 
       - name: List Files Before Release (Windows)
@@ -161,9 +161,9 @@ jobs:
           Get-ChildItem -Force
           echo "Files that should be uploaded:"
           if ("${{ matrix.archive }}" -eq "zip") {
-            echo "twitchTransFN_${{ steps.get_version.outputs.version }}_${{ matrix.env }}.zip"
+            echo "ttfn_custom_${{ steps.get_version.outputs.version }}_${{ matrix.env }}.zip"
           } else {
-            echo "twitchTransFN_${{ steps.get_version.outputs.version }}_${{ matrix.env }}.tar.gz"
+            echo "ttfn_custom_${{ steps.get_version.outputs.version }}_${{ matrix.env }}.tar.gz"
           }
 
       - name: update github release
