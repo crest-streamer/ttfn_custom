@@ -6,14 +6,14 @@ import shutil
 def get_version():
     try:
         # UTF-8エンコーディングでファイルを読み込む
-        with open("twitchTransFN.py", "r", encoding="utf-8") as f:
+        with open("ttfn_custom.py", "r", encoding="utf-8") as f:
             for line in f:
                 if line.startswith("version ="):
                     return line.split("'")[1]
     except UnicodeDecodeError:
         # UTF-8で読み込めない場合は、他のエンコーディングを試す
         try:
-            with open("twitchTransFN.py", "r", encoding="shift-jis") as f:
+            with open("ttfn_custom.py", "r", encoding="shift-jis") as f:
                 for line in f:
                     if line.startswith("version ="):
                         return line.split("'")[1]
@@ -44,20 +44,20 @@ def build_for_os(os_name, arch, add_data_option):
         "--icon=icon.ico",  # アイコン設定を追加
         "--runtime-tmpdir=.", # runtime-tmpdirを追加
         add_data_option,
-        "twitchTransFN.py"
+        "ttfn_custom.py"
     ]
     subprocess.run(command, check=True)
 
     # ファイル名の変更
     if os_name == "windows":
-        os.rename("dist/twitchTransFN.exe", f"dist/twitchTransFN_{version}_win.exe")
+        os.rename("dist/ttfn_custom.exe", f"dist/ttfn_custom_{version}_win.exe")
     elif os_name == "linux":
-        os.rename("dist/twitchTransFN", f"dist/twitchTransFN_{version}_linux")
+        os.rename("dist/ttfn_custom", f"dist/ttfn_custom_{version}_linux")
     elif os_name == "macos":
         if arch == "arm64":
-            os.rename("dist/twitchTransFN", f"dist/twitchTransFN_{version}_macos_M1.command")
+            os.rename("dist/ttfn_custom", f"dist/ttfn_custom_{version}_macos_M1.command")
         elif arch == "x86_64":
-            os.rename("dist/twitchTransFN", f"dist/twitchTransFN_{version}_macos_Intel.command")
+            os.rename("dist/ttfn_custom", f"dist/ttfn_custom_{version}_macos_Intel.command")
 
     print(f"Build for {os_name} ({arch}) completed.")
 
