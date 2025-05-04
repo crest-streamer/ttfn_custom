@@ -1,9 +1,8 @@
-async_google_trans_new==1.4.5
+deep-translator
 gTTS==2.2.4
 playsound==1.2.2
 deepl-translate==1.2.0
 twitchio==2.3.0
 pywin32;platform_system == 'Windows'
-sox;platform_system == 'Windows'
-setuptools;platform_system == 'Darwin'
-pyobjc;platform_system == 'Darwin'
+emoji==2.2.0
+langdetect

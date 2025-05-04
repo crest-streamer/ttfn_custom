@@ -1,78 +1,62 @@
 ######################################################
 # PLEASE CHANGE FOLLOWING CONFIGS ####################
-# 翻訳を利用する配信チャンネルのIDを入力してください。
-Twitch_Channel          = ''
+Twitch_Channel          = 'your_channel_name'
 
-# If you have set a DisplayName, you must still enter your user name
-# 表示名を設定していても、ユーザーIDを入力してください。
-Trans_Username          = ''
-# Visit to https://twitchapps.com/tmi/ and Complete Connect with Your Trans_Username Account
-# https://twitchapps.com/tmi/ を開いて、Connectを押し、必要に応じて許可を押してoauthパスワードを入手してください。
-Trans_OAUTH             = ''
+Trans_Username          = 'your_bot_name'
+Trans_OAUTH             = 'bot_oauth_key'
 
 #######################################################
 # OPTIONAL CONFIGS ####################################
-# Please select a display color for the name of your translation account from the list below and enter it.
-# If you do not enter a color, the color you set yourself will be applied.
-# 翻訳アカウントの名前の表示色を下記リストから選択して入力ください。
-# 入力されていない場合はご自身で設定した色が適用されます。
-Trans_TextColor         = ''
+Trans_TextColor         = 'GoldenRod'
 # Blue, Coral, DodgerBlue, SpringGreen, YellowGreen, Green, OrangeRed, Red, GoldenRod, HotPink, CadetBlue, SeaGreen, Chocolate, BlueViolet, and Firebrick
 
-# Please Enter Your Native Language. if When Other Language in Chat be able to Translation to Your Native Language
-# 設定した言語をベース言語とし、他言語からはデフォルトでベース言語に翻訳します。
-
-# Language List is Get From https://cloud.google.com/translate/docs/languages and Please Set ISO-639-1 Code
-# 言語リストは https://cloud.google.com/translate/docs/languages ここで確認してください。
-# ISO-639-1 コード欄の文字を入力する必要があります。
 lang_TransToHome        = 'ja'
-
-# Please enter your preferred language of translation.
-# If there is a chat in your native language, the software will translate it into your preferred language.
-# 設定した言語を翻訳ベース言語とし、ベース言語からはデフォルトで翻訳ベース言語に翻訳します。
 lang_HomeToOther        = 'en'
 
-# If you hope Show Chatter's Name in TranslationChat be able to True. If not hope then Set False
-# 翻訳後チャットに、翻訳元チャットの発言者IDを表示したい場合はTrueを、しない場合はFalseを入力してください。
 Show_ByName             = True
-
-# if you want the language of the source and the translated language to be displayed in the post-translation chat
-# then True if you do, or False if you don't
-# 翻訳後チャットに、翻訳元チャットの言語と翻訳先の言語を表示したい場合はTrueを、しない場合はFalseを入力してください。
 Show_ByLang             = True
 
-# If you have a language you don't want translated, enter the ISO-639-1 code in the format ['code','code2']
-# 翻訳されたくない言語があれば、['code','code2']という形式でISO-639-1 コードを入力してください。
-Ignore_Lang             = []
-# If you have users you do not want translated, enter their UserName (not DisplayName) in the format ['user','user2']
-# 翻訳されたくないユーザがいる場合は、['user','user2']という形式でユーザーID(表示名ではない)を入力てください。
+Ignore_Lang             = ['']
 Ignore_Users            = ['Nightbot', 'BikuBikuTest']
-# If you have a Keyword you don't want translated, enter their Keywords in the format ['Keyword','Keyword2']
-# If the keyword exists in the source chat, no translation will be done
-# 翻訳されたくない単語がある場合は、['単語','単語2']という形式でその単語を入力してください。該当する単語があれば、翻訳を実施しません。
 Ignore_Line             = ['http', 'BikuBikuTest', '888', '８８８']
-# If you have a Keyword you don't want translated, enter their Keywords in the format ['Keyword','Keyword2']
-# If the keywords are present in the source chat, they will be removed and translated
-# 翻訳されたくない単語がある場合は、['単語','単語2']という形式でその単語を入力してください。
-# 該当する単語があれば、その単語を削除してから翻訳します。
+Ignore_WWW              = ['w', 'ｗ', 'W', 'Ｗ', 'ww', 'ｗｗ', 'WW', 'ＷＷ', 'www', 'ｗｗｗ', 'WWW', 'ＷＷＷ', '草']
 Delete_Words            = ['saatanNooBow', 'BikuBikuTest']
 
-# Once the software is ready, type your message if you wish to send a message in the channel chat. If blank, nothing is sent.
-# 翻訳の準備が完了したときに、自分のチャンネルに送信するチャットメッセージを入力してください。空欄の場合は何も送信されません。
-Start_Message           = ''
+# Any emvironment, set it to `True`, then text will be read by TTS voice!
+# TTS_In:User Input Text, TTS_Out:Bot Output Text
+TTS_In                  = True
+TTS_Out                 = True
+TTS_Kind                = "gTTS" # You can choice "CeVIO" or "Bouyomi" if you want to use CeVIO or BouyomiChan as TTS.
+Bouyomiport             = 50080 # set your Bouyomichan HTTP Port
+# CeVIO_Cast            = "さとうささら" # When you are using CeVIO, you must set voice cast name.
+TTS_TextMaxLength       = 30
+TTS_MessageForOmitting  = ""
 
-# set the read speed: 2.0 means 2 times faster! 
-ReadSpeed               = 1.0
-
-# Run Message
-Start_Message           = ''
+# if you make TTS for only few lang, please add langID in the list
+# for example, ['ja'] means Japanese only, ['ko','en'] means Korean and English are TTS!
+ReadOnlyTheseLang       = []
 
 # Select the translate engine ('deepl' or 'google')
-Translator              = 'deepl'
+Translator              = 'google'
+
+# if you want to Send Translate Chat then Set True.
+Send                    = True
 
 # Use Google Apps Script for tlanslating
 # e.g.) GAS_URL         = 'https://script.google.com/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec'
 GAS_URL                 = ''
+
+# set WakeupMessage. default:TwitchTransFreeNext v.{version}, by さぁたん @saatan_pion and さよなりω @husband_sayonari_omega
+WakeupMessage           = 'TwitchTransFreeNext v.{version}, by さぁたん @saatan_pion and さよなりω @husband_sayonari_omega'
+OnWakeup                = True
+# Enter the suffix of the Google Translate URL you normally use.
+# Example: translate.google.co.jp -> 'co.jp'
+#          translate.google.com   -> 'com'
+GoogleTranslate_suffix  = 'co.jp'
+
+# Download FFmpeg from https://ffmpeg.org/download.html you can change talk speed >=0.5 <=2.0
+AutoDL                  = True
+speed                   = 1.0
 
 # If you meet any bugs, You can check some error message using Debug mode (Debug = True)
 Debug                   = False
