@@ -112,6 +112,8 @@ jobs:
       - name: archive with zip
         if: ${{ matrix.archive == 'zip' }}
         run:  powershell Copy-Item -Path config.py -Destination dist/config.py;
+              New-Item -ItemType Directory -Path dist/sound -Force;
+              Copy-Item -Path sound/beep.mp3 -Destination dist/sound/beep.mp3;
               Compress-Archive -Path dist/* -DestinationPath ttfn_custom_${{ steps.get_version.outputs.version }}_${{ matrix.env }}.zip
 
       - name: archive with tar.gz
