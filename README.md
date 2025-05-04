@@ -43,10 +43,10 @@ https://www.twitch.tv/anomomm
 ```python
 ######################################################
 # PLEASE CHANGE FOLLOWING CONFIGS ####################
-Twitch_Channel          = 'target_channel_name'
+Twitch_Channel          = 'your_channel_name'
 
-Trans_Username          = 'trans_user_name'
-Trans_OAUTH             = 'oauth_for_trans_user'
+Trans_Username          = 'your_bot_name'
+Trans_OAUTH             = 'bot_oauth_key'
 
 #######################################################
 # OPTIONAL CONFIGS ####################################
@@ -69,26 +69,37 @@ Delete_Words            = ['saatanNooBow', 'BikuBikuTest']
 # TTS_In:User Input Text, TTS_Out:Bot Output Text
 TTS_In                  = True
 TTS_Out                 = True
-TTS_Kind                = "gTTS" # You can choice "CeVIO" if you want to use CeVIO as TTS.
+TTS_Kind                = "gTTS" # You can choice "CeVIO" or "Bouyomi" if you want to use CeVIO or BouyomiChan as TTS.
+Bouyomiport             = 50080 # set your Bouyomichan HTTP Port
 # CeVIO_Cast            = "さとうささら" # When you are using CeVIO, you must set voice cast name.
 TTS_TextMaxLength       = 30
-TTS_MessageForOmitting  = "以下略"
+TTS_MessageForOmitting  = ""
 
 # if you make TTS for only few lang, please add langID in the list
 # for example, ['ja'] means Japanese only, ['ko','en'] means Korean and English are TTS!
 ReadOnlyTheseLang       = []
 
 # Select the translate engine ('deepl' or 'google')
-Translator              = 'deepl'
+Translator              = 'google'
+
+# if you want to Send Translate Chat then Set True.
+Send                    = True
 
 # Use Google Apps Script for tlanslating
 # e.g.) GAS_URL         = 'https://script.google.com/macros/s/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/exec'
 GAS_URL                 = ''
 
+# set WakeupMessage. default:TwitchTransFreeNext v.{version}, by さぁたん @saatan_pion and さよなりω @husband_sayonari_omega
+WakeupMessage           = 'TwitchTransFreeNext v.{version}, by さぁたん @saatan_pion and さよなりω @husband_sayonari_omega'
+OnWakeup                = True
 # Enter the suffix of the Google Translate URL you normally use.
 # Example: translate.google.co.jp -> 'co.jp'
 #          translate.google.com   -> 'com'
 GoogleTranslate_suffix  = 'co.jp'
+
+# Download FFmpeg from https://ffmpeg.org/download.html you can change talk speed >=0.5 <=2.0
+AutoDL                  = True
+speed                   = 1.0
 
 # If you meet any bugs, You can check some error message using Debug mode (Debug = True)
 Debug                   = False
@@ -110,9 +121,15 @@ Debug                   = False
 | Ignore_Line | If the words are in message, the message will be ignored.|
 | Ignore_WWW | Ignore Tanshiba(単芝:just only 'w'）line. |
 | Delete_Words | The words will be removed from message. |
-| TTS_Kind | The kind of TTS, "gTTS"(default) or "CeVIO". If you want to use CeVIO, you need to install CeVIO AI in your local computer. |
+| TTS_Kind | The kind of TTS, "gTTS"(default) or "CeVIO" or "Bouyomi"(棒読みちゃん). If you want to use CeVIO, you need to install CeVIO AI in your local computer. |
 | TTS_In | Input text will be read by TTS voice! |
 | TTS_Out | Bot output text will be read by TTS voice! |
+| Bouyomiport | Set BouyomiChan HTTP Port |
+| Send | if True then Send Translated Chat |
+| WakeupMessage | when run application send to Chat Message |
+| OnWakeup | Send WakeupMessage for Twitch Chat |
+| AutoDL | AutoDownload FFMpeg 1st time only |
+| speed | if use gTTS then set Read Text Speed lower 0.5 upper 2.0 |
 | gTTS_In | It's deprecated config, please use TTS_In instead. |
 | gTTS_Out | It's deprecated config, please use TTS_Out instead. |
 | TTS_TextMaxLength | You can specify TTS's read comment max length. If comment has over length from this, it will omit and added TTS_MessageForOmitting on postfix. |
