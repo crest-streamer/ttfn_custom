@@ -111,8 +111,8 @@ jobs:
 
       - name: archive with zip
         if: ${{ matrix.archive == 'zip' }}
-        run:  powershell cp config.py dist/config.py
-              powershell Compress-Archive -Path dist/* -DestinationPath ttfn_custom_${{ steps.get_version.outputs.version }}_${{ matrix.env }}.zip
+        run:  powershell Copy-Item -Path config.py -Destination dist/config.py;
+              Compress-Archive -Path dist/* -DestinationPath ttfn_custom_${{ steps.get_version.outputs.version }}_${{ matrix.env }}.zip
 
       - name: archive with tar.gz
         if: ${{ matrix.archive == 'tar.gz' }}
