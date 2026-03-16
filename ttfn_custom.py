@@ -8,7 +8,8 @@ from emoji import distinct_emoji_list
 from ffmpeg import get_ffmpeg_path
 import json, os, shutil, re, asyncio, deepl, sys, signal, tts, sound
 import database_controller as db # ja:既訳語データベース   en:Translation Database
-from langdetect import detect
+from langdetect import detect, DetectorFactory, LangDetectException
+DetectorFactory.seed = 0  # 言語検出の再現性を確保
 
 version = '2.7.6base'
 '''
@@ -185,6 +186,43 @@ async def GAS_Trans(session, text, lang_source, lang_target):
 async def translate_text_async(text, lang_detect, lang_dist):
     loop = asyncio.get_event_loop()
     return await loop.run_in_executor(None, GoogleTranslator(source=lang_detect, target=lang_dist).translate, text)
+
+# 日本語の文字種チェック用正規表現
+_RE_HIRAGANA   = re.compile(r'[\u3041-\u3096]')
+_RE_KATAKANA   = re.compile(r'[\u30A1-\u30FA]')
+_RE_KANJI_ONLY = re.compile(r'^[\u4E00-\u9FFF\u3400-\u4DBF\uF900-\uFAFF々〇〻\s\d！-／：-＠［-｀｛-～、。・「」『』【】〔〕…―]+$')
+
+def detect_lang_robust(text: str, home_lang: str) -> str:
+    """
+    言語を堅牢に検出する。
+    - sourcelang が空にならないよう home_lang をデフォルトとする
+    - 漢字のみ構成で zh-* と判定された場合、ひらがな・カタカナがなければ
+      home_lang が 'ja' のときも zh として扱う。
+      ただし home_lang が 'ja' でチャット文脈として日本語漢字のみなら 'ja' に補正。
+    """
+    if not text or not text.strip():
+        return home_lang
+
+    try:
+        lang = detect(text)
+    except LangDetectException:
+        return home_lang
+
+    # sourcelang が空文字になるケースを防ぐ
+    if not lang:
+        return home_lang
+
+    # --- 日本語漢字のみ問題の補正 ---
+    # langdetect が zh-cn / zh-tw と判定 かつ home_lang が 'ja' の場合、
+    # ひらがな・カタカナが含まれていれば確実に日本語なので 'ja' に補正。
+    # 含まれていなくても、漢字のみ構成なら曖昧なので 'ja' に補正する。
+    if home_lang == 'ja' and lang in ('zh-cn', 'zh-tw', 'zh'):
+        if _RE_HIRAGANA.search(text) or _RE_KATAKANA.search(text):
+            lang = 'ja'
+        elif _RE_KANJI_ONLY.match(text):
+            lang = 'ja'
+
+    return lang
 # async def non_twitch_emotes(channel:str):
 #     emotes_list = [] # List of non-Twitch emotes
 #     conn = hc("emotes.adamcy.pl") # non-Twitch emotes API
@@ -295,10 +333,17 @@ class Bot(commands.Bot):
             if w in message:
                 return
             
-        # 単芝チェック ------------------------
-        # １行が単芝だけだったら無視
-        if message in Ignore_WWW:
+        # 単芝・8チェック ----------------------
+        # メッセージが w のみ or 8 のみ（全角半角問わず）で構成されていたら翻訳スキップ
+        _msg_stripped = message.strip()
+        _is_www_only = bool(_msg_stripped) and all(c in 'wWｗＷ' for c in _msg_stripped)
+        _is_888_only = bool(_msg_stripped) and all(c in '8８' for c in _msg_stripped)
+        if _is_www_only or _is_888_only:
             return
+
+        # Ignore_WWW リストと完全一致したら LUL に変換（翻訳は続行）
+        if message.strip() in Ignore_WWW:
+            message = 'LUL'
 
         # emoteの削除 --------------------------
         # エモート抜き出し
@@ -382,7 +427,7 @@ class Bot(commands.Bot):
 
         # 言語検出 -----------------------
         if config.Debug: print(f'--- Detect Language ---')
-        lang_detect = detect(in_text)
+        lang_detect = detect_lang_robust(in_text, config.lang_TransToHome)
 
         # use google_trans_new ---
         #if not config.GAS_URL or config.Translator == 'deepl':
