@@ -1,34 +1,18 @@
 name: build binaries
 
 on:
-  push:
-    tags:
-      - "c*"
+  workflow_dispatch:
 
 jobs:
   build_matrix:
     strategy:
       matrix:
-        env: [linux, windows, macos_M1, macos_Intel]
+        env: [windows]
         include:
-          - env: linux
-            os: ubuntu-latest
-            bin: twitchTransFN
-            archive: tar.gz
           - env: windows
             os: windows-latest
             bin: twitchTransFN.exe
             archive: zip
-          - env: macos_M1
-            os: macos-latest
-            bin: twitchTransFN.command
-            archive: tar.gz
-            arch: _arm64
-          - env: macos_Intel
-            os: macos-latest
-            bin: twitchTransFN.command
-            archive: tar.gz
-            arch: _x86_64
     runs-on: ${{ matrix.os }}
     timeout-minutes: 15
     steps:
@@ -45,27 +29,12 @@ jobs:
 
       # Windowsの場合のみPyInstallerのブートローダーを再ビルド
       - name: Clone PyInstaller and Rebuild Bootloader for Windows
-        if: matrix.env == 'windows'
         run: |
           git clone https://github.com/pyinstaller/pyinstaller
           cd pyinstaller/bootloader
           python ./waf distclean all
           cd ..
           pip install .
-
-      # LinuxとmacOSの場合にPyInstallerをインストール
-      - name: Install PyInstaller for Linux and MacOS
-        if: matrix.env != 'windows'
-        run: |
-          python -m pip install pyinstaller
-          if [[ "${{ matrix.env }}" == "macos_M1" ]]; then
-            arch="arm64"
-          elif [[ "${{ matrix.env }}" == "macos_Intel" ]]; then
-            arch="x86_64"
-          else
-            arch=""
-          fi
-          echo "arch=$arch" >> $GITHUB_ENV
 
       - name: install requirements
         run: python -m pip install -r requirements.txt
@@ -77,17 +46,8 @@ jobs:
       - name: Create dist directory
         run: mkdir -p dist
 
-      - name: Get Version (Unix)
-        id: get_version_unix
-        if: runner.os != 'Windows'
-        run: |
-          VERSION=$(grep "version =" ttfn_custom.py | awk -F "'" '{print $2}')
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Version detected: $VERSION"
-
       - name: Get Version (Windows)
-        id: get_version_windows
-        if: runner.os == 'Windows'
+        id: get_version
         shell: powershell
         run: |
           $content = Get-Content -Path ttfn_custom.py
@@ -96,79 +56,29 @@ jobs:
           echo "version=$version" >> $env:GITHUB_OUTPUT
           echo "Version detected: $version"
 
-      - name: Set Version Variable
-        id: get_version
-        run: |
-          if [ "${{ runner.os }}" == "Windows" ]; then
-            echo "version=${{ steps.get_version_windows.outputs.version }}" >> $GITHUB_OUTPUT
-          else
-            echo "version=${{ steps.get_version_unix.outputs.version }}" >> $GITHUB_OUTPUT
-          fi
-        shell: bash
-
       - name: build
         run: python build.py ${{ matrix.env }}
 
       - name: archive with zip
-        if: ${{ matrix.archive == 'zip' }}
         run:  powershell Copy-Item -Path config.py -Destination dist/config.py;
               New-Item -ItemType Directory -Path dist/sound -Force;
               Copy-Item -Path sound/beep.mp3 -Destination dist/sound/beep.mp3;
               Compress-Archive -Path dist/* -DestinationPath ttfn_custom_${{ steps.get_version.outputs.version }}_${{ matrix.env }}.zip
 
-      - name: archive with tar.gz
-        if: ${{ matrix.archive == 'tar.gz' }}
-        run: |
-          ARCHIVE_NAME="ttfn_custom_${{ steps.get_version.outputs.version }}_${{ matrix.env }}"
-          cp config.py dist/config.py
-          mv dist "$ARCHIVE_NAME"
-          tar -czvf "${ARCHIVE_NAME}.tar.gz" "$ARCHIVE_NAME"
-          echo "Created archive: ${ARCHIVE_NAME}.tar.gz"
-          ls -la
-
-      - name: Debug Archive Info (Unix)
-        if: runner.os != 'Windows'
-        run: |
-          echo "Matrix env: ${{ matrix.env }}"
-          echo "Matrix arch: ${{ matrix.arch }}"
-          echo "Version: ${{ steps.get_version.outputs.version }}"
-          echo "Archive type: ${{ matrix.archive }}"
-          ls -la
-
-      - name: Debug Archive Info (Windows)
-        if: runner.os == 'Windows'
+      - name: Debug Archive Info
         shell: powershell
         run: |
           echo "Matrix env: ${{ matrix.env }}"
-          echo "Matrix arch: ${{ matrix.arch }}"
           echo "Version: ${{ steps.get_version.outputs.version }}"
-          echo "Archive type: ${{ matrix.archive }}"
           Get-ChildItem -Force
 
-      - name: List Files Before Release (Unix)
-        if: runner.os != 'Windows'
-        run: |
-          echo "Current directory contents:"
-          ls -la
-          echo "Files that should be uploaded:"
-          if [[ "${{ matrix.archive }}" == "zip" ]]; then
-            echo "ttfn_custom_${{ steps.get_version.outputs.version }}_${{ matrix.env }}.zip"
-          else
-            echo "ttfn_custom_${{ steps.get_version.outputs.version }}_${{ matrix.env }}.tar.gz"
-          fi
-
-      - name: List Files Before Release (Windows)
-        if: runner.os == 'Windows'
+      - name: List Files Before Release
         shell: powershell
         run: |
           echo "Current directory contents:"
           Get-ChildItem -Force
           echo "Files that should be uploaded:"
-          if ("${{ matrix.archive }}" -eq "zip") {
-            echo "ttfn_custom_${{ steps.get_version.outputs.version }}_${{ matrix.env }}.zip"
-          } else {
-            echo "ttfn_custom_${{ steps.get_version.outputs.version }}_${{ matrix.env }}.tar.gz"
-          }
+          echo "ttfn_custom_${{ steps.get_version.outputs.version }}_${{ matrix.env }}.zip"
 
       - name: update github release
         id: create_release
@@ -176,15 +86,10 @@ jobs:
         with:
           draft: false
           prerelease: false
-          files: "*.${{ matrix.archive }}"
+          files: "*.zip"
           fail_on_unmatched_files: false
 
-      - name: Remove dist directory (Unix)
-        if: runner.os != 'Windows'
-        run: rm -rf dist
-
-      - name: Remove dist directory (Windows)
-        if: runner.os == 'Windows'
+      - name: Remove dist directory
         shell: powershell
         run: |
           if (Test-Path dist) {
